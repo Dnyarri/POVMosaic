@@ -44,7 +44,7 @@ __author__ = 'Ilya Razmanov'
 __copyright__ = '(c) 2025-2026 Ilya Razmanov'
 __credits__ = 'Ilya Razmanov'
 __license__ = 'unlicense'
-__version__ = '1.27.8.20'  # 8 Mar 2026
+__version__ = '1.27.22.17'  # 22 Mar 2026
 __maintainer__ = 'Ilya Razmanov'
 __email__ = 'ilyarazmanov@gmail.com'
 __status__ = 'Production'
@@ -174,6 +174,8 @@ def GetSource(event=None) -> None:
         4: preview.zoom(5, 5),
     }
 
+    if X + 16 > sortir.winfo_screenwidth() or Y + 152 > sortir.winfo_screenheight():
+        zoomOut()  # We'be better be on a safe side of the zoom
     preview = zoom_do[zoom_factor]
     zanyato.config(image=preview, compound='none', background=zanyato.master['background'], relief='flat', borderwidth=1)
     zanyato.pack_configure(pady=max(0, 16 - (preview.height() // 2)))
@@ -198,6 +200,9 @@ def GetSource(event=None) -> None:
     menu01.entryconfig('Export 3⁶ Mosaic...', state='normal')
     menu01.entryconfig('Image Info...', state='normal')
     UINormal()
+    h_spacer = max(frame_img.winfo_reqwidth(), info_string.winfo_reqwidth())
+    v_spacer = sortir.winfo_reqheight()
+    sortir.minsize(h_spacer, v_spacer)
     sortir.geometry(f'+{(sortir.winfo_screenwidth() - sortir.winfo_width()) // 2}+{(sortir.winfo_screenheight() - sortir.winfo_height()) // 2 - 32}')
     zanyato.focus_set()
 
@@ -379,6 +384,8 @@ label_zoom.pack(side='left', anchor='n', padx=2, pady=0, fill='both')
 
 # ↓ Center window horizontally, +100 vertically
 sortir.update()
+h_spacer = max(frame_img.winfo_reqwidth(), info_string.winfo_reqwidth())
+v_spacer = sortir.winfo_reqheight()
+sortir.minsize(h_spacer, v_spacer)
 sortir.geometry(f'+{(sortir.winfo_screenwidth() - sortir.winfo_width()) // 2}+100')
-sortir.minsize(frame_img.winfo_width(), 100)
 sortir.mainloop()
