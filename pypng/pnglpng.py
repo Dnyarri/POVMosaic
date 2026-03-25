@@ -71,7 +71,7 @@ __author__ = 'Ilya Razmanov'
 __copyright__ = '(c) 2024-2026 Ilya Razmanov'
 __credits__ = 'Ilya Razmanov'
 __license__ = 'unlicense'
-__version__ = '26.3.8.1'
+__version__ = '26.3.8.312'
 __maintainer__ = 'Ilya Razmanov'
 __email__ = 'ilyarazmanov@gmail.com'
 __status__ = 'Production'
@@ -81,8 +81,6 @@ from .png import Reader, Writer
 """ ╭──────────╮
     │ png2list │
     ╰──────────╯ """
-
-
 def png2list(in_filename: str) -> tuple[int, int, int, int, list[list[list[int]]], dict[str, int | bool | tuple | list[tuple]]]:
     """Take PNG filename and return PNG data in a human-friendly form.
 
@@ -91,7 +89,7 @@ def png2list(in_filename: str) -> tuple[int, int, int, int, list[list[list[int]]
 
     - **``X``**, **``Y``**, **``Z``**: PNG image dimensions (int);
     - **``maxcolors``**: number of colors per channel for current image (int),
-      either 1, or 255, or 65535, for 1 bpc, 8 bpc and 16 bpc PNG, 
+      either 1, or 255, or 65535, for 1 bpc, 8 bpc and 16 bpc PNG,
       respectively;
     - **``list_3d``**: Y * X * Z list (image) of lists (rows) of lists (pixels)
       of ints (channels), from PNG iDAT;
@@ -125,8 +123,6 @@ def png2list(in_filename: str) -> tuple[int, int, int, int, list[list[list[int]]
 """ ╭──────────╮
     │ list2png │
     ╰──────────╯ """
-
-
 def list2png(out_filename: str, list_3d: list[list[list[int]]], info: dict[str, int | bool | tuple | list[tuple]]) -> None:
     """Take filename and image data, and create PNG file.
 
@@ -134,7 +130,7 @@ def list2png(out_filename: str, list_3d: list[list[list[int]]], info: dict[str, 
         of ints (channels);
     :type list_3d: list[list[list[int]]
     :param info: dictionary, chunks like resolution etc. as you want them
-        to be present in PNG;    
+        to be present in PNG;
     :type info: dict[str, int | bool | tuple | list[tuple]]
     :param str out_filename: output PNG file name (str).
 
@@ -146,9 +142,7 @@ def list2png(out_filename: str, list_3d: list[list[list[int]]], info: dict[str, 
     """
 
     # ↓ Determining list dimensions
-    Y = len(list_3d)
-    X = len(list_3d[0])
-    Z = len(list_3d[0][0])
+    Y, X, Z = (len(list_3d), len(list_3d[0]), len(list_3d[0][0]))
     # ↓ Ignoring any possible list channels above 4-th.
     Z = min(Z, 4)
 
@@ -191,8 +185,6 @@ def list2png(out_filename: str, list_3d: list[list[list[int]]], info: dict[str, 
 """ ╭────────────────────╮
     │ Create empty image │
     ╰────────────────────╯ """
-
-
 def create_image(X: int, Y: int, Z: int) -> list[list[list[int]]]:
     """Create zero-filled 3D nested list of X * Y * Z size."""
 

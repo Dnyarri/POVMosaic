@@ -6,7 +6,7 @@ Usage::
 
 """
 
-__version__ = '26.3.8.1'
+__version__ = '26.3.8.312'
 
 from .pnglpng import list2png, png2list
 

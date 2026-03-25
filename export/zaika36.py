@@ -213,10 +213,12 @@ def zaika36(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
                 '\n/*  ----------------------------------------------------\n    |  Global modifiers for all thingies in the scene  |\n    ----------------------------------------------------  */\n',
                 '#declare thingie_texture_2 = texture {  // Define transparent texture overlay here',
                 '  pigment {gradient z colour_map {[0.0, rgbt <0,0,0,1>] [1.0, rgbt <0,0,0,1>]} scale 0.1 rotate <30, 30, 0>}};\n',  # Transparent texture overlay
-                '#declare yes_color = 1;         // Whether source per-thingie color is taken or global patten applied',
+                '#declare yes_color = 1;         // Whether source per-thingie color is taken or global pattern applied',
                 # ↓ Color, filter and transmit functions
-                '// Color-relater settings below work only for "yes_color = 1;"',
+                '// Color-related settings below work only for "yes_color = 1;"',
                 '#declare cm = function(Channel) {Channel};   // Color transfer function for RGB channels, all thingies',
+                '// "Alpha" is taken from source pixel, "Luma" calculated from source pixel,',
+                '//  both values are hardcoded into "thingie"',
                 '#declare f_val = function(Luma, Alpha) {0.0};  // Filter value for all thingies. 0 means opaque.',
                 '#declare t_val = function(Luma, Alpha) {0.0};  // Transmit value for all thingies. Note that for Alpha = transparency you need inversion (1 - Alpha)!',
                 # ↓ Map
