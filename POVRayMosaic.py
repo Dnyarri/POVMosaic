@@ -44,7 +44,7 @@ __author__ = 'Ilya Razmanov'
 __copyright__ = '(c) 2025-2026 Ilya Razmanov'
 __credits__ = 'Ilya Razmanov'
 __license__ = 'unlicense'
-__version__ = '1.27.22.17'  # 22 Mar 2026
+__version__ = '1.27.28.16'  # 28 Mar 2026
 __maintainer__ = 'Ilya Razmanov'
 __email__ = 'ilyarazmanov@gmail.com'
 __status__ = 'Production'
@@ -58,7 +58,7 @@ from tkinter.messagebox import showinfo
 from pypng import png2list
 from pypnm import pnm2list, list2bin
 
-from export import zaika36, zaika44, zaika63
+from povzaika import zaika36, zaika44, zaika63
 
 
 def DisMiss(event=None) -> None:
@@ -124,12 +124,6 @@ def GetSource(event=None) -> None:
 
     UIBusy()
 
-    """ ┌────────────────────────────────────────┐
-        │ Loading file, converting data to list. │
-        │  NOTE: maxcolors, image3D are GLOBALS! │
-        │  They are used during export!          │
-        └────────────────────────────────────────┘ """
-
     if Path(sourcefilename).suffix.lower() == '.png':
         # ↓ Reading image as list
         X, Y, Z, maxcolors, image3D, info = png2list(sourcefilename)
@@ -141,14 +135,8 @@ def GetSource(event=None) -> None:
     else:
         raise ValueError('Extension not recognized')
 
-    """ ┌─────────────────────────────────────────────────────────────────────────┐
-        │ Converting list to bytes of PPM-like structure "preview_data" in memory │
-        └────────────────────────────────────────────────────────────────────────-┘ """
     preview_data = list2bin(image3D, maxcolors, show_chessboard=True)
 
-    """ ┌────────────────────────────────────────────────┐
-        │ Now showing "preview_data" bytes using Tkinter │
-        └────────────────────────────────────────────────┘ """
     preview = PhotoImage(data=preview_data)
 
     zoom_show = {  # What to show below preview
@@ -179,7 +167,7 @@ def GetSource(event=None) -> None:
     preview = zoom_do[zoom_factor]
     zanyato.config(image=preview, compound='none', background=zanyato.master['background'], relief='flat', borderwidth=1)
     zanyato.pack_configure(pady=max(0, 16 - (preview.height() // 2)))
-    # ↓ binding zoom on preview click
+    # ↓ Binding everything that need opened image
     zanyato.bind('<Control-Button-1>', zoomIn)  # Ctrl + left click
     zanyato.bind('<Double-Control-Button-1>', zoomIn)  # Ctrl + left click too fast
     zanyato.bind('<Control-+>', zoomIn)
@@ -200,7 +188,7 @@ def GetSource(event=None) -> None:
     menu01.entryconfig('Export 3⁶ Mosaic...', state='normal')
     menu01.entryconfig('Image Info...', state='normal')
     UINormal()
-    h_spacer = max(frame_img.winfo_reqwidth(), info_string.winfo_reqwidth())
+    h_spacer = sortir.winfo_reqwidth()
     v_spacer = sortir.winfo_reqheight()
     sortir.minsize(h_spacer, v_spacer)
     sortir.geometry(f'+{(sortir.winfo_screenwidth() - sortir.winfo_width()) // 2}+{(sortir.winfo_screenheight() - sortir.winfo_height()) // 2 - 32}')
@@ -208,7 +196,7 @@ def GetSource(event=None) -> None:
 
 
 def SaveAs63() -> None:
-    """Once pressed on Export 6³ Mosaic..."""
+    """Once selected Export 6³ Mosaic..."""
 
     global sourcefilename
     savefilename = filedialog.asksaveasfilename(
@@ -228,7 +216,7 @@ def SaveAs63() -> None:
 
 
 def SaveAs44() -> None:
-    """Once pressed on Export 4⁴ Mosaic..."""
+    """Once selected Export 4⁴ Mosaic..."""
 
     global sourcefilename
     savefilename = filedialog.asksaveasfilename(
@@ -248,7 +236,7 @@ def SaveAs44() -> None:
 
 
 def SaveAs36() -> None:
-    """Once pressed on Export 3⁶ Mosaic..."""
+    """Once selected Export 3⁶ Mosaic..."""
 
     global sourcefilename
     savefilename = filedialog.asksaveasfilename(
@@ -343,14 +331,6 @@ menu01.add_command(label='Image Info...', accelerator='Ctrl+I', state='disabled'
 menu01.add_separator()
 menu01.add_command(label='Exit', state='normal', accelerator='Ctrl+Q', command=DisMiss)
 
-sortir.bind('<Button-3>', ShowMenu)
-sortir.bind_all('<Alt-f>', ShowMenu)
-sortir.bind_all('<Control-o>', GetSource)
-sortir.bind_all('<Control-q>', DisMiss)
-sortir.bind_all('<Control-Q>', DisMiss)
-sortir.bind_all('<Control-w>', DisMiss)
-sortir.bind_all('<Control-W>', DisMiss)
-
 frame_img = Frame(sortir, borderwidth=2, relief='groove')
 frame_img.pack(side='top', anchor='center', expand=True)
 
@@ -366,8 +346,6 @@ zanyato = Label(
     background='grey90',
     cursor='arrow',
 )
-zanyato.bind('<Double-Button-1>', GetSource)
-frame_img.bind('<Double-Button-1>', GetSource)
 zanyato.pack(side='top', padx=0, pady=(0, 2))
 
 frame_zoom = Frame(frame_img, width=300, borderwidth=2, relief='groove')
@@ -382,10 +360,23 @@ butt_minus.pack(side='right', padx=0, pady=0, fill='both')
 label_zoom = Label(frame_zoom, text='Zoom 1:1', font=('courier', 8), state='disabled')
 label_zoom.pack(side='left', anchor='n', padx=2, pady=0, fill='both')
 
+# ↓ Binding everything that does not need opened image
+zanyato.bind('<Double-Button-1>', GetSource)
+frame_img.bind('<Double-Button-1>', GetSource)
+sortir.bind('<Button-3>', ShowMenu)
+sortir.bind_all('<Alt-f>', ShowMenu)
+sortir.bind_all('<Alt-F>', ShowMenu)
+sortir.bind_all('<Control-o>', GetSource)
+sortir.bind_all('<Control-O>', GetSource)
+sortir.bind_all('<Control-q>', DisMiss)
+sortir.bind_all('<Control-Q>', DisMiss)
+sortir.bind_all('<Control-w>', DisMiss)
+sortir.bind_all('<Control-W>', DisMiss)
+
 # ↓ Center window horizontally, +100 vertically
 sortir.update()
 h_spacer = max(frame_img.winfo_reqwidth(), info_string.winfo_reqwidth())
 v_spacer = sortir.winfo_reqheight()
 sortir.minsize(h_spacer, v_spacer)
-sortir.geometry(f'+{(sortir.winfo_screenwidth() - sortir.winfo_width()) // 2}+100')
+sortir.geometry(f'+{(sortir.winfo_screenwidth() - sortir.winfo_width()) // 2}+{(sortir.winfo_screenheight() - sortir.winfo_height()) // 2 - 32}')
 sortir.mainloop()
