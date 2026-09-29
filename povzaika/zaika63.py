@@ -72,12 +72,15 @@ References:
 #               WARNING: old presets may need editing!
 # 1.22.1.9  Writing acceleration due to improved buffering.
 # 1.26.6.6  General cleanup, improved docstring, many functions moved to private.
+# 1.33.29.9 Since version 2 development is being restarted again,
+#           version 1 gets one more maintenance update.
+#           "But this time will be the last!" (c) Soviet anecdote.
 
 __author__ = 'Ilya Razmanov'
 __copyright__ = '(c) 2007-2026 Ilya Razmanov'
 __credits__ = 'Ilya Razmanov'
 __license__ = 'unlicense'
-__version__ = '1.26.6.6'  # 6 Feb 2026
+__version__ = '1.33.29.9'  # 29 Sep 2026
 __maintainer__ = 'Ilya Razmanov'
 __email__ = 'ilyarazmanov@gmail.com'
 __status__ = 'Production'
@@ -104,7 +107,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
         ║ src functions ║
         ╚═══════════════╝ """
 
-    def _src(x: int | float, y: int | float, z: int) -> int:
+    def _src(x: float, y: float, z: int) -> int:
         """Analog of src from FilterMeister, force repeat edge
         instead of out of range.
         Returns channel z value for pixel x, y."""
@@ -116,7 +119,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
 
         return channelvalue
 
-    def _src_lum(x: int | float, y: int | float) -> int:
+    def _src_lum(x: float, y: float) -> int:
         """Returns brightness of pixel x, y."""
 
         if Z < 3:  # supposedly L and LA
@@ -148,7 +151,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
         ║ Writing POV file ║
         ╚══════════════════╝ """
 
-    resultfile = open(resultfilename, 'w')
+    resultfile = open(resultfilename, 'w')  # noqa: SIM115
 
     """ ┌────────────┐
         │ POV header │
@@ -177,7 +180,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
         └──────────────────────┘ """
 
     resultfile.write(
-        '\n'.join(
+        '\n'.join(  # noqa: FLY002
             [
                 '#version 3.7;\n',
                 'global_settings{',
@@ -244,7 +247,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
                 'first column is input, first digits in second column is output for this input.',
                 'Note that by default input=output, i.e. no changes applied to source pixel brightness. */\n',
                 '#declare Curve = function {  // Spline curve construction begins',
-                '  spline { linear_spline',
+                '  spline {linear_spline',
                 '    0.0,   <0.0,   0>,',
                 '    0.25,  <0.25,  0>,',
                 '    0.5,   <0.5,   0>,',
@@ -366,7 +369,7 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
                             '          finish{thingie_finish}\n',
                             '          normal{thingie_normal translate(normal_move_rnd * (<rand(rnd_1), rand(rnd_1), rand(rnd_1)>-0.5)) rotate(normal_rotate_rnd * (<rand(rnd_1), rand(rnd_1), rand(rnd_1)>-0.5))}',
                             '        }\n',  # closing base texture
-                            '        texture{thingie_texture_2}\n'  # overlay texture
+                            '        texture{thingie_texture_2}\n',  # overlay texture
                             '      #end\n',
                             f'      scale(<1, 1, 1> + (scale_map * <map({c}), map({c}), map({c})>))\n',
                             f'      rotate(rotate_map * <map({c}), map({c}), map({c})>)\n',
@@ -381,13 +384,13 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
                 )  # thething built but not closed yet
     # ↓ Transform thething to fit 1, 1, 1 cube at 0, 0, 0 coordinates
     resultfile.write(
-        '\n'.join(
+        '\n'.join(  # noqa: FLY002
             [
                 '\n  // Object transforms to fit 1, 1, 1 cube at 0, 0, 0 coordinates',
                 '  translate <0.25, 0.5, 0> + <-0.5 * X, -0.5 * Y, 0>',  # centering at scene zero
                 '  scale<1.0 / max(X, Y), 1.0 / max(X, Y), 1.0 / max(X, Y)>',  # fitting
-                '} // thething closed\n\n'
-                '\nobject {thething\n'  # inserting thething
+                '} // thething closed\n\n',
+                '\nobject {thething\n',  # inserting thething
                 '  #if (yes_color < 1)',
                 '    pigment {color rgb<0.5, 0.5, 0.5>}',
                 '    finish {thingie_finish}',
@@ -400,10 +403,8 @@ def zaika63(image3d: list[list[list[int]]], maxcolors: int, resultfilename: str)
         )
     )
     # ↑ Closed scene
-
     resultfile.close()
-
-    return None
+    # ↑ Closed file, exit function
 
 
 # ↓ Dummy stub for standalone execution attempt
